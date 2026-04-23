@@ -23,7 +23,7 @@ Build a native Linux depot for Steam desktop Linux and Steam Deck without changi
 2. Drop the official LOVE 11.5 AppImage into `LOVE_11_5_LINUX_RUNTIME_DROP`
 3. Run `./MAKE_LINUX_PACKAGE.sh` for test packages
 4. Run `./MAKE_LINUX_PACKAGE_RELEASE.sh` for Steam release packages
-5. Upload the extracted `game/` folder contents to the Linux depot
+5. Upload the extracted `game/` folder contents to the Linux depot (do not upload a zip as Steam content root)
 
 ## Validation targets
 - native Linux desktop Steam launch
@@ -37,8 +37,14 @@ Build a native Linux depot for Steam desktop Linux and Steam Deck without changi
 ## WSL-assisted Windows flow
 1. Install WSL with a Linux distro.
 2. Install `g++`, `pkg-config`, and LuaJIT or Lua 5.1 development headers inside WSL.
-3. From Windows, run `BUILD_LINUX_STEAM_BRIDGE_WSL.bat` to compile `steam_bridge_native.so`.
-4. Run `MAKE_LINUX_PACKAGE_WSL.bat` or `MAKE_LINUX_PACKAGE_RELEASE_WSL.bat` to compile and package in one step.
+3. From Windows, run `BUILD_LINUX_STEAM_BRIDGE_WSL.bat` to compile `steam_bridge_native.so`, or run from WSL:
+   - `bash integrations/steam/native/build_linux.sh`
+4. For packaging in WSL, run from repository root:
+   - `bash MAKE_LINUX_PACKAGE.sh` (test package)
+   - `bash MAKE_LINUX_PACKAGE_RELEASE.sh` (Steam release package)
+5. Optional Windows one-click wrappers:
+   - `MAKE_LINUX_PACKAGE_WSL.bat`
+   - `MAKE_LINUX_PACKAGE_RELEASE_WSL.bat`
 
 ## Steam Deck Desktop Mode quick path
 1. Put the project folder on the Deck.
