@@ -9,7 +9,11 @@ local audioRuntime = require("audio_runtime")
 local achievementRuntime = require("achievement_runtime")
 
 function love.load()
-    debugConsoleLog.init()
+    debugConsoleLog.init({
+        enabled = SETTINGS
+            and SETTINGS.PERF
+            and SETTINGS.PERF.DEBUG_CONSOLE_LOG_ENABLED == true
+    })
     audioRuntime.init()
     achievementRuntime.init()
     steamRuntime.init()
