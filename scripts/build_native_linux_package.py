@@ -308,6 +308,13 @@ def build_upload_instructions(package_root: Path, keep_steam_appid: bool) -> str
         4. Verify the installed depot preserves executable bits for `MOM.sh` and `love.AppImage`.
         5. The package also includes `MOM.desktop` and `MOM.png` for native desktop shortcuts.
         6. {steam_appid_note}
+
+        Steam Cloud Auto-Cloud setup for cross-platform scenario stats:
+        - Use root WinAppDataRoaming, subdirectory LOVE/MeowOverMoo, OS All OSes.
+        - Add file patterns OnlineRatingProfile.dat and ScenarioProgress.dat.
+        - Add Root Override for macOS: New root MacAppSupport, Replace path LOVE/MeowOverMoo.
+        - Add Root Override for Linux: New root LinuxXdgDataHome, Replace path love/MeowOverMoo.
+        - Do not create separate OS-specific roots without overrides; those do not cross-sync.
         """
     )
 
