@@ -185,7 +185,7 @@ local function preloadPlatformDependencies(opts)
 
     local platform = detectPlatform()
     if platform == "Windows" then
-        preloadPlatformDependencies(opts)
+        preloadWindowsDependencies(opts)
         return
     end
     if platform == "Linux" then
@@ -267,7 +267,7 @@ local function ensureNativeLoaded(opts)
     end
 
     configureNativeSearchPath(opts)
-    preloadWindowsDependencies(opts)
+    preloadPlatformDependencies(opts)
 
     local ok, loaded = pcall(require, NATIVE_MODULE_NAME)
     if not ok then
