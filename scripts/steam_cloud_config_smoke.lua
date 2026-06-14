@@ -37,8 +37,4 @@ local windowsPackager = readFile("scripts/build_fused_windows_package.py")
 assertContains(windowsPackager, "subdirectory MeowOverMoo", "windows package upload instructions")
 assertNotContains(windowsPackager, "subdirectory LOVE/MeowOverMoo", "windows package upload instructions")
 
-local linuxPackager = readFile("scripts/build_native_linux_package.py")
-assertContains(linuxPackager, "subdirectory MeowOverMoo", "linux package upload instructions")
-assertNotContains(linuxPackager, "subdirectory LOVE/MeowOverMoo", "linux package upload instructions")
-
 print("steam_cloud_config_smoke: OK")

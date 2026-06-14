@@ -114,22 +114,17 @@ local function collectDependencyCandidatePaths(opts, fileName)
     return candidates
 end
 
-local function detectPlatform()
-    if love and love.system and type(love.system.getOS) == "function" then
-        local okOs, osName = pcall(love.system.getOS)
-        if okOs and type(osName) == "string" and osName ~= "" then
-            return osName
-        end
+local function preloadWindowsDependencies(opts)
+    if dependencyPreloadAttempted then
+        return
     end
+    dependencyPreloadAttempted = true
 
     local pathSep = package and package.config and package.config:sub(1, 1) or "/"
-    if pathSep == "\\" then
-        return "Windows"
+    if pathSep ~= "\\" then
+        return
     end
-    return "Linux"
-end
 
-local function preloadWindowsDependencies(opts)
     local okFfi, ffi = pcall(require, "ffi")
     if not okFfi or not ffi then
         dependencyPreloadSummary = "ffi_unavailable"
@@ -151,47 +146,6 @@ local function preloadWindowsDependencies(opts)
     end
 
     dependencyPreloadSummary = dep .. " not found in expected paths"
-end
-
-local function preloadLinuxDependencies(opts)
-    local okFfi, ffi = pcall(require, "ffi")
-    if not okFfi or not ffi then
-        dependencyPreloadSummary = "ffi_unavailable"
-        return
-    end
-
-    local dep = "libsteam_api.so"
-    local candidates = collectDependencyCandidatePaths(opts, dep)
-    for _, candidate in ipairs(candidates) do
-        if fileExists(candidate) then
-            local okLoad, loadResult = pcall(ffi.load, candidate, true)
-            if okLoad and loadResult then
-                dependencyPreloadSummary = dep .. "=" .. tostring(candidate)
-                return
-            end
-            dependencyPreloadSummary = dep .. " load failed: " .. tostring(loadResult)
-            return
-        end
-    end
-
-    dependencyPreloadSummary = dep .. " not found in expected paths"
-end
-
-local function preloadPlatformDependencies(opts)
-    if dependencyPreloadAttempted then
-        return
-    end
-    dependencyPreloadAttempted = true
-
-    local platform = detectPlatform()
-    if platform == "Windows" then
-        preloadWindowsDependencies(opts)
-        return
-    end
-    if platform == "Linux" then
-        preloadLinuxDependencies(opts)
-        return
-    end
 end
 
 local function configureNativeSearchPath(opts)
@@ -267,7 +221,7 @@ local function ensureNativeLoaded(opts)
     end
 
     configureNativeSearchPath(opts)
-    preloadPlatformDependencies(opts)
+    preloadWindowsDependencies(opts)
 
     local ok, loaded = pcall(require, NATIVE_MODULE_NAME)
     if not ok then
