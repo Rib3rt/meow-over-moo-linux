@@ -66,6 +66,16 @@ def is_external_runtime_file(path: Path, source_root: Path) -> bool:
     return False
 
 
+def is_linux_package_source_file(path: Path, source_root: Path) -> bool:
+    rel = path.relative_to(source_root).as_posix()
+    if rel.startswith("integrations/steam/redist/"):
+        return rel in {
+            "integrations/steam/redist/linux64/steam_bridge_native.so",
+            "integrations/steam/redist/linux64/libsteam_api.so",
+        }
+    return True
+
+
 def pick_target_folder(parent: Path, base_name: str) -> Path:
     candidate = parent / base_name
     if not candidate.exists():
@@ -94,6 +104,7 @@ def resolve_appimage(runtime_root: Path) -> Path:
 
 def collect_source_file_sets(source_root: Path) -> tuple[set[Path], set[Path]]:
     runtime_files, _ = collect_release_files(source_root)
+    runtime_files = {p for p in runtime_files if is_linux_package_source_file(p, source_root)}
     beside_files = {p for p in runtime_files if is_external_runtime_file(p, source_root)}
     inside_files = runtime_files - beside_files
     return inside_files, beside_files
@@ -310,7 +321,7 @@ def build_upload_instructions(package_root: Path, keep_steam_appid: bool) -> str
         6. {steam_appid_note}
 
         Steam Cloud Auto-Cloud setup for cross-platform scenario stats:
-        - Use root WinAppDataRoaming, subdirectory LOVE/MeowOverMoo, OS All OSes.
+        - Use root WinAppDataRoaming, subdirectory MeowOverMoo, OS All OSes.
         - Add file patterns OnlineRatingProfile.dat and ScenarioProgress.dat.
         - Add Root Override for macOS: New root MacAppSupport, Replace path LOVE/MeowOverMoo.
         - Add Root Override for Linux: New root LinuxXdgDataHome, Replace path love/MeowOverMoo.
@@ -323,17 +334,17 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build native Linux package using LOVE AppImage runtime.")
     parser.add_argument(
         "--source-project",
-        default="/Users/mdc/Documents/New project/MeowOverMoo_LinuxNative",
+        default="/Users/mdc/Documents/meow-over-moo-linux",
         help="Source project folder.",
     )
     parser.add_argument(
         "--linux-runtime-dir",
-        default="/Users/mdc/Documents/New project/MeowOverMoo_LinuxNative/LOVE_11_5_LINUX_RUNTIME_DROP",
+        default="/Users/mdc/Documents/meow-over-moo-linux/LOVE_11_5_LINUX_RUNTIME_DROP",
         help="Folder containing the official LOVE 11.5 Linux AppImage.",
     )
     parser.add_argument(
         "--output-parent",
-        default="/Users/mdc/Documents/New project",
+        default="/Users/mdc/Documents",
         help="Parent folder where the Linux package folder will be created.",
     )
     parser.add_argument(
